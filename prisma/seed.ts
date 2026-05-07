@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Starting seed...');
 
-  const passwordHash = await bcrypt.hash('Admin@2024', 10);
+  const passwordHash = await bcrypt.hash('admin123', 10);
 
   const admin = await prisma.user.upsert({
     where: { username: 'admin' },
