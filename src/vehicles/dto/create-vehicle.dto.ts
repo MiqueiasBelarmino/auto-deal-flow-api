@@ -10,7 +10,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Fuel, Transmission } from '@prisma/client';
+import { Fuel, Transmission, VehicleType } from '@prisma/client';
 import { Type } from 'class-transformer';
 
 export class CreateVehicleDto {
@@ -44,6 +44,11 @@ export class CreateVehicleDto {
   @ApiProperty({ enum: Transmission })
   @IsEnum(Transmission)
   transmission!: Transmission;
+
+  @ApiPropertyOptional({ enum: VehicleType, default: VehicleType.CAR })
+  @IsOptional()
+  @IsEnum(VehicleType)
+  type?: VehicleType;
 
   @ApiPropertyOptional({ example: 'Prata' })
   @IsOptional()
