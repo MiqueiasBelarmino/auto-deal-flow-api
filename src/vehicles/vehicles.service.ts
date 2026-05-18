@@ -86,7 +86,26 @@ export class VehiclesService {
 
   async updateStatus(id: string, dto: UpdateStatusDto, userId: string) {
     await this.findOne(id);
-    const label = VehicleStatusLabel[dto.status];
+    let label = VehicleStatusLabel[dto.status];
+
+    if (dto.status === 'RESERVADO') {
+      const customerInfo = [];
+      if (dto.customerName) customerInfo.push(dto.customerName);
+      if (dto.customerPhone) customerInfo.push(dto.customerPhone);
+
+      if (customerInfo.length > 0) {
+        label += ` (Cliente: ${customerInfo.join(' - ')})`;
+      }
+    } else if (dto.status === 'VENDIDO') {
+      const saleInfo = [];
+      if (dto.salePrice) saleInfo.push(`Valor: R$ ${dto.salePrice}`);
+      if (dto.notes) saleInfo.push(`Obs: ${dto.notes}`);
+
+      if (saleInfo.length > 0) {
+        label += ` (${saleInfo.join(' | ')})`;
+      }
+    }
+
     const vehicle = await this.prisma.vehicle.update({
       where: { id },
       data: {

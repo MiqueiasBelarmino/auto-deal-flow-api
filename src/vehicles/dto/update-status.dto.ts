@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { VehicleStatus } from '@prisma/client';
 
@@ -7,4 +7,24 @@ export class UpdateStatusDto {
   @IsEnum(VehicleStatus)
   @IsNotEmpty()
   status!: VehicleStatus;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  customerName?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  customerPhone?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumber()
+  salePrice?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  notes?: string;
 }
