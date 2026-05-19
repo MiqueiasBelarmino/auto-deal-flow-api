@@ -59,6 +59,35 @@ export class VehiclesService {
     return { ...vehicle, margin, estimatedProfit };
   }
 
+  async findPublicOne(id: string) {
+    const vehicle = await this.prisma.vehicle.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        brand: true,
+        model: true,
+        year: true,
+        km: true,
+        color: true,
+        fuel: true,
+        transmission: true,
+        type: true,
+        publicPrice: true,
+        photos: true,
+        optionals: true,
+        issues: true,
+        ipvaPaid: true,
+        auctionHistory: true,
+        spareKey: true,
+        manual: true,
+        status: true,
+      },
+    });
+    if (!vehicle) throw new NotFoundException('Veículo não encontrado');
+
+    return vehicle;
+  }
+
   async create(dto: CreateVehicleDto, userId: string) {
     const vehicle = await this.prisma.vehicle.create({
       data: {

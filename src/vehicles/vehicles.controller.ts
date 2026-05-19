@@ -16,6 +16,7 @@ import { ListVehiclesDto } from './dto/list-vehicles.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { Public } from '../auth/decorators/public.decorator';
 import { Role } from '@prisma/client';
 
 @ApiTags('vehicles')
@@ -34,6 +35,14 @@ export class VehiclesController {
   @ApiOperation({ summary: 'Listar veículos com filtros e paginação' })
   findAll(@Query() query: ListVehiclesDto) {
     return this.vehiclesService.findAll(query);
+  }
+
+  @Public()
+  @Get('catalog/:id')
+  @ApiOperation({ summary: 'Detalhe público de um veículo para o catálogo' })
+  @ApiResponse({ status: 404, description: 'Veículo não encontrado' })
+  getCatalog(@Param('id') id: string) {
+    return this.vehiclesService.findPublicOne(id);
   }
 
   @Get(':id')
