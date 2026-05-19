@@ -12,6 +12,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
 import { UsersModule } from './users/users.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
 import { UploadsModule } from './uploads/uploads.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { UploadsModule } from './uploads/uploads.module';
     UsersModule,
     VehiclesModule,
     UploadsModule,
+    DashboardModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads',
