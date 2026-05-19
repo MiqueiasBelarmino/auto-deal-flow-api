@@ -52,7 +52,11 @@ export class VehiclesService {
     if (!vehicle) throw new NotFoundException('Veículo não encontrado');
 
     const margin = Number(vehicle.publicPrice) - Number(vehicle.minPrice);
-    return { ...vehicle, margin };
+    const estimatedProfit = vehicle.purchasePrice
+      ? Number(vehicle.publicPrice) - Number(vehicle.purchasePrice) - Number(vehicle.preparationCost || 0)
+      : null;
+      
+    return { ...vehicle, margin, estimatedProfit };
   }
 
   async create(dto: CreateVehicleDto, userId: string) {

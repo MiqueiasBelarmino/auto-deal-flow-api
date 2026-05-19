@@ -63,17 +63,26 @@ model Vehicle {
   fuel          Fuel
   transmission  Transmission
   type          VehicleType      @default(CAR)
-  publicPrice   Decimal          @db.Decimal(12, 2)
-  minPrice      Decimal          @db.Decimal(12, 2)
-  maxDiscount   Decimal?         @db.Decimal(12, 2)
-  status        VehicleStatus    @default(DISPONIVEL)
-  photos        String[]
-  optionals     String[]
-  internalNotes String?
-  issues        String?
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-  history       VehicleHistory[]
+  publicPrice      Decimal          @db.Decimal(12, 2)
+  minPrice         Decimal          @db.Decimal(12, 2)
+  purchasePrice    Decimal?         @db.Decimal(12, 2) // Valor que a loja comprou o carro
+  preparationCost  Decimal?         @db.Decimal(12, 2) // Custo com oficina/estética
+  maxDiscount      Decimal?         @db.Decimal(12, 2)
+  status           VehicleStatus    @default(DISPONIVEL)
+  photos           String[]
+  optionals        String[]
+  internalNotes    String?
+  issues           String?
+  
+  // Campos do Dossiê
+  ipvaPaid         Boolean          @default(false)
+  auctionHistory   Boolean          @default(false)
+  spareKey         Boolean          @default(false)
+  manual           Boolean          @default(false)
+
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  history          VehicleHistory[]
 }
 
 model VehicleHistory {

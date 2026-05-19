@@ -8,6 +8,7 @@ import {
   Max,
   IsArray,
   IsEnum,
+  IsBoolean,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Fuel, Transmission, VehicleType } from '@prisma/client';
@@ -74,6 +75,20 @@ export class CreateVehicleDto {
   @Type(() => Number)
   maxDiscount?: number;
 
+  @ApiPropertyOptional({ example: 100000 })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  purchasePrice?: number;
+
+  @ApiPropertyOptional({ example: 1500 })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  preparationCost?: number;
+
   @ApiPropertyOptional({ type: [String] })
   @IsOptional()
   @IsArray()
@@ -89,4 +104,28 @@ export class CreateVehicleDto {
   @IsOptional()
   @IsString()
   issues?: string;
+
+  @ApiPropertyOptional({ default: false })
+  @IsOptional()
+  @IsBoolean()
+  @Type(() => Boolean)
+  ipvaPaid?: boolean;
+
+  @ApiPropertyOptional({ default: false })
+  @IsOptional()
+  @IsBoolean()
+  @Type(() => Boolean)
+  auctionHistory?: boolean;
+
+  @ApiPropertyOptional({ default: false })
+  @IsOptional()
+  @IsBoolean()
+  @Type(() => Boolean)
+  spareKey?: boolean;
+
+  @ApiPropertyOptional({ default: false })
+  @IsOptional()
+  @IsBoolean()
+  @Type(() => Boolean)
+  manual?: boolean;
 }
