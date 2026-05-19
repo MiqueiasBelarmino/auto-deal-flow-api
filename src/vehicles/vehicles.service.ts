@@ -6,10 +6,14 @@ import { ListVehiclesDto } from './dto/list-vehicles.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { VehicleStatusLabel } from './helpers/vehicle-status-label';
 import { Prisma } from '@prisma/client';
+import { WhatsappService } from '../whatsapp/whatsapp.service';
 
 @Injectable()
 export class VehiclesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private whatsappService: WhatsappService,
+  ) {}
 
   async findAll(query: ListVehiclesDto) {
     const { search, status, limit = 20, offset = 0, sort } = query;
@@ -118,7 +122,7 @@ export class VehiclesService {
   }
 
   async updateStatus(id: string, dto: UpdateStatusDto, userId: string) {
-    await this.findOne(id);
+    const vehicleBefore = await this.findOne(id);
     let label = VehicleStatusLabel[dto.status];
 
     if (dto.status === 'RESERVADO') {
@@ -151,6 +155,31 @@ export class VehiclesService {
         },
       },
     });
+
+    if (dto.status === 'RESERVADO' || dto.status === 'VENDIDO') {
+      const user = await this.prisma.user.findUnique({ where: { id: userId } });
+      const sellerName = user?.name || 'Sistema';
+      
+      const actionName = dto.status === 'RESERVADO' ? 'RESERVADO' : 'VENDIDO';
+      
+      const vehicleName = `${vehicle.brand} ${vehicle.model} (${vehicle.year})`;
+      const details = dto.status === 'VENDIDO' && dto.salePrice 
+        ? `Valor: R$ ${dto.salePrice}` 
+        : (dto.status === 'RESERVADO' && dto.customerName ? `Cliente: ${dto.customerName}` : 'Sem detalhes');
+
+      const templateParams = [vehicleName, actionName, sellerName, details];
+      
+      const admins = await this.prisma.user.findMany({
+        where: { role: 'ADMIN', isActive: true, phone: { not: null } },
+      });
+      
+      for (const admin of admins) {
+        if (admin.phone) {
+          this.whatsappService.sendNotification(admin.phone, 'deal_status_alert', templateParams).catch(() => {});
+        }
+      }
+    }
+
     return vehicle;
   }
 
