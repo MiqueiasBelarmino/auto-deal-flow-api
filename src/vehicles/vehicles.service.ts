@@ -92,6 +92,54 @@ export class VehiclesService {
     return vehicle;
   }
 
+  async findPublicCatalog(query: ListVehiclesDto) {
+    const { search, limit = 20, offset = 0, sort } = query;
+
+    const where: Prisma.VehicleWhereInput = {
+      status: 'DISPONIVEL',
+    };
+
+    if (search) {
+      where.OR = [
+        { brand: { contains: search, mode: 'insensitive' } },
+        { model: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    let orderBy: Prisma.VehicleOrderByWithRelationInput = { createdAt: 'desc' };
+    if (sort) {
+      const [field, dir] = sort.split(':');
+      orderBy = { [field]: dir } as Prisma.VehicleOrderByWithRelationInput;
+    }
+
+    const [data, total] = await this.prisma.$transaction([
+      this.prisma.vehicle.findMany({
+        where,
+        orderBy,
+        take: limit,
+        skip: offset,
+        select: {
+          id: true,
+          brand: true,
+          model: true,
+          year: true,
+          km: true,
+          color: true,
+          fuel: true,
+          transmission: true,
+          type: true,
+          publicPrice: true,
+          photos: true,
+          optionals: true,
+          status: true,
+        },
+      }),
+      this.prisma.vehicle.count({ where }),
+    ]);
+
+    return { data, total, limit, offset };
+  }
+
   async create(dto: CreateVehicleDto, userId: string) {
     const vehicle = await this.prisma.vehicle.create({
       data: {

@@ -38,6 +38,13 @@ export class VehiclesController {
   }
 
   @Public()
+  @Get('catalog')
+  @ApiOperation({ summary: 'Listar catálogo público de veículos (apenas disponíveis)' })
+  findPublicCatalog(@Query() query: ListVehiclesDto) {
+    return this.vehiclesService.findPublicCatalog(query);
+  }
+
+  @Public()
   @Get('catalog/:id')
   @ApiOperation({ summary: 'Detalhe público de um veículo para o catálogo' })
   @ApiResponse({ status: 404, description: 'Veículo não encontrado' })
