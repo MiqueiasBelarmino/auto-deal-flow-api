@@ -26,7 +26,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
     UploadsModule,
     DashboardModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
+      rootPath: join(process.cwd(), 'uploads'),
       serveRoot: '/uploads',
       serveStaticOptions: { index: false },
     }),

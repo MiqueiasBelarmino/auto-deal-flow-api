@@ -56,9 +56,38 @@ export class UploadsController {
     const vehicle = await this.prisma.vehicle.findUnique({ where: { id } });
     if (!vehicle) throw new BadRequestException('Veículo não encontrado');
 
-    const newUrls = files.map(
-      (f) => `/uploads/vehicles/${id}/${f.filename}`,
-    );
+    const isR2 = this.uploadsService.isR2Enabled();
+    const newUrls: string[] = [];
+
+    if (isR2) {
+      // Upload para Cloudflare R2
+      for (const file of files) {
+        const key = `vehicles/${id}/${file.filename}`;
+        try {
+          const r2Url = await this.uploadsService.uploadFileToR2(
+            file.path,
+            key,
+            file.mimetype,
+          );
+          newUrls.push(r2Url);
+        } catch (error) {
+          // Em caso de falha em lote, tentar apagar arquivos locais criados pelo Multer que sobraram
+          for (const f of files) {
+            try {
+              if (require('fs').existsSync(f.path)) {
+                require('fs').unlinkSync(f.path);
+              }
+            } catch {}
+          }
+          throw new BadRequestException(`Falha ao subir imagem para nuvem: ${error.message}`);
+        }
+      }
+    } else {
+      // Armazenamento local padrão
+      files.forEach((file) => {
+        newUrls.push(`/uploads/vehicles/${id}/${file.filename}`);
+      });
+    }
 
     const updated = await this.prisma.vehicle.update({
       where: { id },
@@ -88,9 +117,8 @@ export class UploadsController {
     }
 
     const photoUrl = vehicle.photos[photoIndex];
-    // Convert URL to file path: /uploads/vehicles/... → uploads/vehicles/...
-    const filePath = photoUrl.replace(/^\//, '');
-    this.uploadsService.deleteFile(filePath);
+    // Deleta da nuvem se R2 ou do disco se local
+    await this.uploadsService.deleteFile(photoUrl);
 
     const newPhotos = vehicle.photos.filter((_, i) => i !== photoIndex);
     const updated = await this.prisma.vehicle.update({
