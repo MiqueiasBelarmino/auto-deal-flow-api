@@ -1,0 +1,15 @@
+name: Keep Render API Alive
+
+on:
+  schedule:
+    # Runs every 10 minutes
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render Backend
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" https://auto-deal-flow-api.onrender.com/api/v1/vehicles/catalog
