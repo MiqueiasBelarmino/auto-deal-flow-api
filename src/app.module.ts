@@ -13,6 +13,7 @@ import { UsersModule } from './users/users.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { AntifreezeService } from './common/services/antifreeze.service';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
   controllers: [AppController],
   providers: [
     AppService,
+    AntifreezeService,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
