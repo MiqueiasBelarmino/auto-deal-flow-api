@@ -49,7 +49,7 @@ export class AntifreezeService implements OnModuleInit {
     // Ping immediately on boot to make sure it functions (with a tiny delay to ensure server is listening)
     setTimeout(() => {
       this.ping(pingUrl);
-    }, 5000);
+    }, this.configService.get<number>('ANTIFREEZE_DELAY') || 5000);
 
     setInterval(() => {
       this.ping(pingUrl);
