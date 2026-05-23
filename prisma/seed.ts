@@ -218,6 +218,39 @@ async function main() {
     }
   });
 
+  // 6. Sea-Doo RXT-X 300 RS 2021 (DISPONIVEL - JETS KI / WATERCRAFT)
+  const v6 = await prisma.vehicle.create({
+    data: {
+      brand: 'Sea-Doo',
+      model: 'RXT-X 300 RS',
+      color: 'Amarelo/Preto',
+      year: 2021,
+      km: 45, // 45 horas de uso
+      fuel: Fuel.GASOLINA,
+      transmission: Transmission.AUTOMATICO,
+      type: VehicleType.WATERCRAFT,
+      publicPrice: 135000.0,
+      minPrice: 128000.0,
+      purchasePrice: 110000.0,
+      preparationCost: 1500.0,
+      status: VehicleStatus.DISPONIVEL,
+      photos: [
+        'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=600&q=80'
+      ],
+      optionals: ['Sistema iBR (Freio e Ré)', 'Som Premium Bluetooth', 'Modo Eco/Sport', 'Escada de Embarque', 'Carreta Rodoviária de Alumínio'],
+      ipvaPaid: true,
+      auctionHistory: false,
+      spareKey: true,
+      manual: true,
+      history: {
+        create: {
+          action: 'Cadastrado no estoque por seed',
+          userId: admin.id,
+        }
+      }
+    }
+  });
+
   console.log('Seed completed successfully!');
 }
 

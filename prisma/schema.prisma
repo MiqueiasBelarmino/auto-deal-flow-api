@@ -38,6 +38,7 @@ enum Transmission {
 enum VehicleType {
   CAR
   MOTORCYCLE
+  WATERCRAFT
 }
 
 model User {
