@@ -24,6 +24,7 @@ export class UsersService {
 
   async findAll() {
     const users = await this.prisma.user.findMany({
+      where: { username: { not: 'root' } },
       orderBy: { createdAt: 'desc' },
     });
     return users.map((u) => this.exclude(u, ['password']));
@@ -49,7 +50,11 @@ export class UsersService {
   }
 
   async update(id: string, dto: UpdateUserDto) {
-    await this.findOne(id);
+    const targetUser = await this.prisma.user.findUnique({ where: { id } });
+    if (!targetUser) throw new NotFoundException('Usuário não encontrado');
+    if (targetUser.username === 'root') {
+      throw new UnauthorizedException('Ação não permitida para o usuário root');
+    }
 
     if (dto.username) {
       const conflict = await this.prisma.user.findFirst({
@@ -68,6 +73,9 @@ export class UsersService {
   async changePassword(id: string, dto: ChangePasswordDto, requesterId: string) {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundException('Usuário não encontrado');
+    if (user.username === 'root' && requesterId !== id) {
+      throw new UnauthorizedException('Ação não permitida para o usuário root');
+    }
 
     // Requester must verify their own current password only if changing own account
     if (requesterId === id) {
@@ -84,7 +92,11 @@ export class UsersService {
   }
 
   async remove(id: string) {
-    await this.findOne(id);
+    const targetUser = await this.prisma.user.findUnique({ where: { id } });
+    if (!targetUser) throw new NotFoundException('Usuário não encontrado');
+    if (targetUser.username === 'root') {
+      throw new UnauthorizedException('Ação não permitida para o usuário root');
+    }
     const user = await this.prisma.user.update({
       where: { id },
       data: { isActive: false },

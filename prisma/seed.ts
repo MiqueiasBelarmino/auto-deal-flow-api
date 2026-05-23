@@ -12,6 +12,18 @@ async function main() {
   await prisma.user.deleteMany({});
 
   const passwordHash = await bcrypt.hash('admin123', 10);
+  const rootPasswordHash = await bcrypt.hash('root123', 10);
+
+  // Criar Usuário Root de Manutenção (Invisível)
+  const rootUser = await prisma.user.create({
+    data: {
+      name: 'Sistema',
+      username: 'root',
+      password: rootPasswordHash,
+      role: Role.ADMIN,
+      phone: '5511999999990',
+    },
+  });
 
   // Criar Usuário Admin
   const admin = await prisma.user.create({
@@ -35,7 +47,7 @@ async function main() {
     },
   });
 
-  console.log('Users created: admin (admin123), joao (admin123)');
+  console.log('Users created: root (root123), admin (admin123), joao (admin123)');
 
   // 1. Toyota Corolla XEi 2020 (DISPONIVEL)
   const v1 = await prisma.vehicle.create({
